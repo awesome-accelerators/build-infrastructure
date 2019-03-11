@@ -1,0 +1,2 @@
+# store here private key (i.e. pem files) that you will use in building/accessing your infrastructure
+# do not commit these private keys here
