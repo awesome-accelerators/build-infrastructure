@@ -31,6 +31,7 @@ sudo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
 
 
 echo "* Install latest Jenkins"
+# /var/lib/jenkins
 sudo yum install -y jenkins-2.150.2-1.1.noarch
 
 echo "Tool for handling xml files"
@@ -43,6 +44,27 @@ sudo service jenkins start
 sudo chkconfig --add jenkins
 sudo chkconfig jenkins on
 
+# disable setup wizard
+sudo mkdir -p /var/lib/jenkins/init.groovy.d
+sudo chmod 777 -R /var/lib/jenkins/init.groovy.d
+cat <<EOF >> /var/lib/jenkins/init.groovy.d/basic-security.groovy
+#!groovy
+
+import jenkins.model.*
+import jenkins.install.*;
+import hudson.util.*;
+import hudson.security.*
+
+def instance = Jenkins.getInstance()
+
+instance.setInstallState(InstallState.INITIAL_SETUP_COMPLETED)
+
+def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+instance.setAuthorizationStrategy(strategy)
+instance.save()
+
+EOF
+
 wait_jenkins_to_start
 sleep 20
 ADMIN_PASSW=$(sudo bash -c "cat /var/lib/jenkins/secrets/initialAdminPassword")
@@ -50,7 +72,11 @@ ADMIN_PASSW=$(sudo bash -c "cat /var/lib/jenkins/secrets/initialAdminPassword")
 sudo wget http://localhost:8080/jnlpJars/jenkins-cli.jar -O /var/lib/jenkins/jenkins-cli.jar
 
 echo "* Installing the following plugins: ${plugins}"
-sudo java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080 -auth admin:$ADMIN_PASSW install-plugin ${plugins}
+for i in ${plugins//,/ }
+do
+  sudo java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080 -auth admin:$ADMIN_PASSW install-plugin "$i"
+done
+
 sudo java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080 -auth admin:$ADMIN_PASSW restart
 
 echo "Cleanup"
@@ -59,3 +85,8 @@ sudo find /var/log -type f -delete
 sudo find /tmp -type f -delete
 sudo find /root /home -name '.*history' -delete
 wait_jenkins_to_start
+
+# delete init.groovy.d configuration folder
+sudo rm -rf /var/lib/jenkins/init.groovy.d
+
+echo "Admin Password is: ${ADMIN_PASSW}"

@@ -32,7 +32,7 @@ $ terraform plan
 ### Building
 a) starting the build Infrastructure up
 ```shell
-$ make infra
+$ make build
 ```
 
 b) deleting the entire infrastructure
