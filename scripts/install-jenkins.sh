@@ -30,8 +30,8 @@ echo "* add jenkins repo"
 sudo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
 
 
-echo "* Install latest Jenkins"
-# /var/lib/jenkins
+echo "* Install latest Jenkins under /var/lib/jenkins"
+# pay attention to version needs to be used latter on disabling the setup wizard
 sudo yum install -y jenkins-2.150.2-1.1.noarch
 
 echo "Tool for handling xml files"
@@ -54,14 +54,26 @@ import jenkins.model.*
 import jenkins.install.*;
 import hudson.util.*;
 import hudson.security.*
+import static jenkins.model.Jenkins.instance as jenkins
+import jenkins.install.InstallState
 
 def instance = Jenkins.getInstance()
-
-instance.setInstallState(InstallState.INITIAL_SETUP_COMPLETED)
-
+def hudsonRealm = new HudsonPrivateSecurityRealm(false)
 def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+strategy.setAllowAnonymousRead(false)
+
+
+hudsonRealm.createAccount('{{ jenkins_admin_username }}','{{ jenkins_admin_password }}')
+instance.setSecurityRealm(hudsonRealm)
+
 instance.setAuthorizationStrategy(strategy)
+instance.setInstallState(InstallState.INITIAL_SETUP_COMPLETED)
 instance.save()
+
+if (!jenkins.installState.isSetupComplete()) {
+  println '--> Initial Setup Completed'
+  InstallState.INITIAL_SETUP_COMPLETED.initializeState()
+}
 
 EOF
 
@@ -87,6 +99,6 @@ sudo find /root /home -name '.*history' -delete
 wait_jenkins_to_start
 
 # delete init.groovy.d configuration folder
-sudo rm -rf /var/lib/jenkins/init.groovy.d
+#sudo rm -rf /var/lib/jenkins/init.groovy.d
 
 echo "Admin Password is: ${ADMIN_PASSW}"
