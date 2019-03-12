@@ -24,5 +24,5 @@ variable "jenkins_master_instance_type" {
 
 variable "jenkins_plugins" {
   description = "Jenkins Plugins that will be installed automatically when the jenkins master will be provisioned."
-  default = ["aws-credentials", "git", "jira", "cloudbees-folder", "timestamper", "pipeline-stage-view", "workflow-step-api", "workflow-aggregator", "mailer", "blueocean", "ssh-slaves", "credentials-binding", ""]
+  default = ["aws-credentials", "config-file-provider", "ec2", "git", "jira", "cloudbees-folder", "timestamper", "pipeline-stage-view", "workflow-step-api", "workflow-aggregator", "mailer", "blueocean", "ssh-slaves", "credentials-binding"]
 }
