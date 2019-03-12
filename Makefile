@@ -14,8 +14,14 @@ destroy: ## INFRA: destroy the infrastructure
 ssh: ## INFRA: open shell to remote IP	
 	@read -p "Remote IP:" ipaddress && ssh -i $(KEY_PAIR) ec2-user@$$ipaddress
 
-scp: ## INFRA: copy remote file to local comp
-	@read -p "Remote IP:" ipaddress && \
-	@read -p "Remote Path:" remotepath && \
-	@read -p "Local Path:" localpath && \
-	scp -i $(KEY_PAIR) ec2-user@$$ipaddress:$$remotepath $$localpath
+scpi: ## INFRA: copy remote file to local - interactive mode
+	@read -p "Remote IP:" ip && \
+	read -p "Remote Path:" remotepath && \
+	read -p "Local Path:" localpath && \
+	make scp ip=$$ip remotepath=$$remotepath localpath=$$localpath
+	
+	#scp -i $(KEY_PAIR) ec2-user@$$ipaddress:$$remotepath $$localpath
+
+scp: ## INFRA copy remote file to local: $ make scp ipaddress=35.181.59.71 remotepath=/var/lib/jenkins/config.xml localpath=config.xml
+	@scp -i $(KEY_PAIR) -o 'StrictHostKeyChecking no' ec2-user@$$ip:$$remotepath $$localpath
+
