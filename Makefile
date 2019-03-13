@@ -20,8 +20,6 @@ scpi: ## INFRA: copy remote file to local - interactive mode
 	read -p "Local Path:" localpath && \
 	make scp ip=$$ip remotepath=$$remotepath localpath=$$localpath
 	
-	#scp -i $(KEY_PAIR) ec2-user@$$ipaddress:$$remotepath $$localpath
-
-scp: ## INFRA copy remote file to local: $ make scp ipaddress=35.181.59.71 remotepath=/var/lib/jenkins/config.xml localpath=config.xml
+scp: ## INFRA copy remote file to local: $ make scp ip=35.181.59.71 remotepath=/var/lib/jenkins/config.xml localpath=config.xml
 	@scp -i $(KEY_PAIR) -o 'StrictHostKeyChecking no' ec2-user@$$ip:$$remotepath $$localpath
 
