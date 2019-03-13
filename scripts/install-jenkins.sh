@@ -68,6 +68,7 @@ instance.setSecurityRealm(hudsonRealm)
 
 instance.setAuthorizationStrategy(strategy)
 instance.setInstallState(InstallState.INITIAL_SETUP_COMPLETED)
+instance.setNumExecutors(1)
 instance.save()
 
 if (!jenkins.installState.isSetupComplete()) {
@@ -98,7 +99,8 @@ sudo find /tmp -type f -delete
 sudo find /root /home -name '.*history' -delete
 wait_jenkins_to_start
 
+sleep 30
 # delete init.groovy.d configuration folder
-#sudo rm -rf /var/lib/jenkins/init.groovy.d
+sudo rm -rf /var/lib/jenkins/init.groovy.d
 
 echo "Admin Password is: ${ADMIN_PASSW}"

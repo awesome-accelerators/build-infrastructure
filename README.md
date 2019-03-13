@@ -1,4 +1,7 @@
 # Build Infrastructure
+### About
+>This is a POC of building a test infrastructure in AWS using Terraform.
+
 ### Prerequisites
 * Terraform [installed](https://learn.hashicorp.com/terraform/getting-started/install) on your machine
 * AWS Credentials in [place](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html)
@@ -16,7 +19,7 @@ $ git clone https://github.com/awesome-accelerators/build-infrastructure
 b) create a new Amazon Key Pairs
 > see [guide](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair)
 > copy to ./secrets folder
-> update [variables.tf](./variables.tf) to point to this key
+> update `private_key_file` from [variables.tf](./variables.tf) to point to this key.
 
 c) Initialize the Terraform working directory
 ```shell
